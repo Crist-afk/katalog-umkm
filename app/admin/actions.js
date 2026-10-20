@@ -51,3 +51,51 @@ export async function keluarAdmin() {
 
   redirect("/admin/login");
 }
+
+/**
+ * Server Action untuk mengganti password admin yang sedang login.
+ */
+export async function gantiPasswordAdmin(arg1, arg2) {
+  const formData = arg2 instanceof FormData ? arg2 : arg1 instanceof FormData ? arg1 : null;
+  const passwordBaru = formData?.get("password_baru");
+  const konfirmasiPassword = formData?.get("konfirmasi_password");
+
+  if (!passwordBaru || !konfirmasiPassword) {
+    return { error: "Semua kolom password wajib diisi." };
+  }
+
+  if (String(passwordBaru).length < 8) {
+    return { error: "Password baru minimal 8 karakter." };
+  }
+
+  if (passwordBaru !== konfirmasiPassword) {
+    return { error: "Konfirmasi password tidak sama dengan password baru." };
+  }
+
+  try {
+    const supabase = await buatKoneksiAdmin();
+
+    // Pastikan admin sedang login sebelum mengganti password
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { error: "Sesi tidak ditemukan atau telah berakhir. Silakan login kembali." };
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: String(passwordBaru),
+    });
+
+    if (updateError) {
+      return { error: updateError.message || "Gagal mengganti password." };
+    }
+
+    return { success: true, message: "Password berhasil diperbarui." };
+  } catch (err) {
+    return { error: err.message || "Terjadi kesalahan saat mengganti password." };
+  }
+}
+
