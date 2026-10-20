@@ -119,5 +119,54 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 
 ## Debugging dan fitur bonus
 
-*(Bagian ini dapat diisi saat mengerjakan perbaikan tambahan atau fitur bonus US-07 s.d. US-14)*
+### US-07 List Produk Admin dari Database
+- **Hasil:** Halaman `/admin` (`app/admin/page.jsx`) diubah menjadi Server Component async yang mengambil daftar produk langsung dari database Supabase (`produk`) dan diurutkan berdasarkan ID. Data mock telah sepenuhnya dilepas.
+
+### US-08 Tambah Produk
+- **Hasil:** Menambahkan Server Action `tambahProduk` di `app/admin/actions.js` yang memverifikasi login admin di server, memvalidasi input, dan menyimpan produk baru ke Supabase. Form dihubungkan ke `app/admin/produk/baru/page.jsx`.
+
+### US-09 Ubah Produk
+- **Hasil:** Dibuat rute dinamis `/admin/produk/[id]/ubah/page.jsx` dan komponen `FormUbahProduk.jsx` yang memuat data awal produk dari database. Server Action `ubahProduk` menyimpan perubahan ke Supabase setelah memverifikasi sesi admin.
+
+### US-10 Hapus Produk
+- **Hasil:** Dibuat komponen `TombolHapus.jsx` di dalam `TabelProduk.jsx` dengan konfirmasi `window.confirm` sebelum memanggil Server Action `hapusProduk` yang terproteksi login.
+
+### US-11 Filter Kategori dan Pencarian
+- **Hasil:** Dibuat komponen `FilterKatalog.jsx` di halaman utama `/`. Pengunjung dapat mencari nama produk (`ilike`) dan menyaring berdasarkan kategori unik yang diambil dinamis dari database.
+
+### US-13 PWA (Progressive Web App)
+- **Hasil:** Dibuat `public/manifest.json` yang merujuk pada ikon toko di `public/icons` (192px dan 512px) dengan warna tema toko, serta didaftarkan pada metadata layout utama (`app/layout.jsx`).
+
+### US-15 Urutkan Produk
+- **Hasil:** Ditambahkan pilihan pengurutan di katalog (Terbaru, Harga Termurah, Harga Termahal). Pengurutan langsung dieksekusi di level query database Supabase (`.order()`), bukan sekadar manipulasi tampilan.
+
+### US-17 Produk Terkait
+- **Hasil:** Halaman detail produk (`app/produk/[id]/page.jsx`) secara otomatis menampilkan rekomendasi produk lain dengan kategori yang sama dari database Supabase, mengecualikan produk yang sedang aktif dibuka.
+
+### US-22 Halaman Tentang Toko
+- **Hasil:** Halaman `/tentang` (`app/tentang/page.jsx`) menyajikan profil UMKM, alamat lengkap, jam operasional, dan tautan kontak langsung WhatsApp dari `lib/toko.js`. Tautan navigasi tersedia di header dan footer.
+
+### US-23 Bagikan dan Salin Link Produk
+- **Hasil:** Dibuat komponen `TombolBagikan.jsx` di halaman detail produk yang mendukung Web Share API pada browser HP dan fallback ke clipboard pada laptop, lengkap dengan umpan balik visual "Link tersalin!".
+
+### US-26 Metadata SEO dan Open Graph
+- **Hasil:** Fungsi `generateMetadata` dinamis di `app/produk/[id]/page.jsx` memuat judul produk, deskripsi produk/harga, serta tag Open Graph (nama dan gambar produk) saat dibagikan.
+
+### US-27 Sitemap dan Robots.txt
+- **Hasil:** Dibuat `app/sitemap.js` yang memuat seluruh URL produk dinamis dari database secara otomatis, dan `app/robots.js` yang menunjuk ke lokasi sitemap dengan aturan crawling yang aman.
+
+### US-28 Halaman 404 dan Skeleton Loading
+- **Hasil:** Tersedia `app/not-found.jsx` ramah pengguna serta `loading.jsx` di beranda dan halaman detail produk (`app/produk/[id]/loading.jsx`) dengan skeleton animasi pulsa.
+
+### US-30 Dashboard Ringkasan Admin
+- **Hasil:** Halaman admin menampilkan kartu metrik ringkasan: total produk yang terdaftar serta rincian jumlah produk per kategori.
+
+### US-34 Validasi Form Admin di Server
+- **Hasil:** Server Action `tambahProduk` dan `ubahProduk` memvalidasi input di server (nama wajib diisi, harga harus berupa angka positif). Pesan error ditampilkan per field di bawah kolom isian yang bermasalah, dan nilai input yang telah diketik tidak hilang saat terjadi kesalahan.
+
+### US-35 Ekspor Produk ke CSV
+- **Hasil:** Dibuat route handler `/admin/produk/ekspor/route.js` yang dilindungi pemeriksaan sesi login admin di server. Menghasilkan file CSV terformat aman (escaping karakter khusus) dan dapat diunduh langsung lewat tombol "Ekspor CSV" di halaman admin.
+
+### US-36 Terakhir Dilihat
+- **Hasil:** Dibuat modul `components/TerakhirDilihat.jsx` yang mencatat produk yang sedang dilihat ke `localStorage` (maksimal 4 item) dan menampilkannya kembali di beranda di bawah bagian "Terakhir dilihat" hanya jika riwayat tersedia.
 

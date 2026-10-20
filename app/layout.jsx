@@ -4,8 +4,27 @@ import Footer from "@/components/Footer";
 import { toko } from "@/lib/toko";
 
 export const metadata = {
-  title: toko.nama,
+  title: {
+    default: toko.nama,
+    template: `%s — ${toko.nama}`,
+  },
   description: toko.tagline,
+  manifest: "/manifest.json",
+  themeColor: "#1f6b4f",
+  openGraph: {
+    siteName: toko.nama,
+    locale: "id_ID",
+    type: "website",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: toko.nama,
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -27,3 +46,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
