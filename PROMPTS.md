@@ -167,6 +167,15 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 ### US-35 Ekspor Produk ke CSV
 - **Hasil:** Dibuat route handler `/admin/produk/ekspor/route.js` yang dilindungi pemeriksaan sesi login admin di server. Menghasilkan file CSV terformat aman (escaping karakter khusus) dan dapat diunduh langsung lewat tombol "Ekspor CSV" di halaman admin.
 
-### US-36 Terakhir Dilihat
-- **Hasil:** Dibuat modul `components/TerakhirDilihat.jsx` yang mencatat produk yang sedang dilihat ke `localStorage` (maksimal 4 item) dan menampilkannya kembali di beranda di bawah bagian "Terakhir dilihat" hanya jika riwayat tersedia.
+### US-21 Keranjang Belanja dan Pesan via WhatsApp
+- **Hasil:** Dibuat sistem keranjang belanja lengkap dengan `KeranjangContext.jsx` (disimpan di `localStorage` sehingga bertahan saat berpindah halaman atau dimuat ulang), komponen `TombolTambahKeranjang.jsx` di kartu produk dan halaman detail dengan umpan balik visual, tautan keranjang dengan badge jumlah item dinamis di header (`NavKeranjang.jsx`), serta halaman `/keranjang` (`app/keranjang/page.jsx`) untuk mengatur kuantitas barang, menghapus item, menghitung total harga secara akurat, dan tombol "Pesan Semua via WhatsApp" yang merangkum seluruh pesanan ke nomor `lib/toko.js`.
+
+### US-24 Favorit Tersimpan di Browser
+- **Hasil:** Dibuat modul `context/FavoritContext.jsx` yang menyimpan daftar produk favorit pengunjung ke `localStorage`. Tersedia tombol hati `TombolFavorit.jsx` di setiap kartu produk dan halaman detail produk, indikator jumlah favorit di header (`NavFavorit.jsx`), serta halaman khusus `/favorit` (`app/favorit/page.jsx`) yang menampilkan seluruh produk favorit pengunjung.
+
+### US-25 Mode Gelap
+- **Hasil:** Dikonfigurasikan token tema warna ganda di `app/globals.css` dengan variabel CSS (`--bg-latar`, `--bg-permukaan`, `--border-garis`, `--text-teks`, dll.). Dibuat tombol beralih tema `TombolModeGelap.jsx` di header yang mengingat preferensi pengguna di `localStorage` serta script deteksi tema otomatis di `<head>` untuk mencegah kedipan tampilan saat muat ulang. Semua elemen dan teks tetap kontras dan terbaca jelas di kedua mode.
+
+### US-29 Upload Foto ke Supabase Storage
+- **Hasil:** Dibuat bucket publik `produk` di Supabase Storage. Form tambah dan ubah produk dilengkapi input file foto (`foto_file`). File gambar divalidasi tipe (JPG, PNG, WEBP, SVG) dan ukuran maksimal 5 MB secara ketat di server. Proses upload dieksekusi secara aman di server melalui Server Actions tanpa mengekspos kunci secret ke browser, lalu URL publik yang dihasilkan disimpan ke kolom `foto_url` produk.
 

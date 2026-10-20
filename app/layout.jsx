@@ -1,6 +1,8 @@
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { KeranjangProvider } from "@/context/KeranjangContext";
+import { FavoritProvider } from "@/context/FavoritContext";
 import { toko } from "@/lib/toko";
 
 export const metadata = {
@@ -29,8 +31,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('katalog_umkm_tema');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(!t&&d)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
@@ -39,9 +46,13 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="flex min-h-screen flex-col font-sans antialiased">
-        <Header />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4">{children}</main>
-        <Footer />
+        <KeranjangProvider>
+          <FavoritProvider>
+            <Header />
+            <main className="mx-auto w-full max-w-5xl flex-1 px-4">{children}</main>
+            <Footer />
+          </FavoritProvider>
+        </KeranjangProvider>
       </body>
     </html>
   );

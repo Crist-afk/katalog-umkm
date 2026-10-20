@@ -42,7 +42,14 @@ export default function HalamanTambahProduk() {
           defaultValue={state?.values?.kategori || ""}
         />
         <Input
-          label="Link foto"
+          label="Upload file foto (maks. 5 MB)"
+          name="foto_file"
+          type="file"
+          accept="image/*"
+          error={state?.errors?.foto_file}
+        />
+        <Input
+          label="Atau link foto (URL)"
           name="foto_url"
           placeholder="https://... atau /produk/nama-file.svg"
           defaultValue={state?.values?.foto_url || ""}

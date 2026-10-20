@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import TombolWhatsApp from "@/components/TombolWhatsApp";
 import TombolBagikan from "@/components/TombolBagikan";
+import TombolTambahKeranjang from "@/components/TombolTambahKeranjang";
+import TombolFavorit from "@/components/TombolFavorit";
 import KartuProduk from "@/components/KartuProduk";
+import AsistenAI from "@/components/AsistenAI";
 import { CatatTerakhirDilihat } from "@/components/TerakhirDilihat";
 import { buatKoneksiServer } from "@/lib/supabase/server";
 import { formatRupiah } from "@/lib/format";
@@ -84,15 +87,23 @@ export default async function HalamanDetailProduk({ params }) {
             {formatRupiah(produk.harga)}
           </p>
           <p className="max-w-prose leading-relaxed text-teks-lembut">{produk.deskripsi}</p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex-1">
-              <TombolWhatsApp produk={produk} />
+          <div className="flex flex-col gap-3">
+            <TombolTambahKeranjang produk={produk} />
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex-1">
+                <TombolWhatsApp produk={produk} />
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <TombolFavorit produk={produk} varian="lebar" />
+                <TombolBagikan
+                  judul={`${produk.nama} — ${toko.nama}`}
+                  teks={`Lihat ${produk.nama} seharga ${formatRupiah(produk.harga)} di ${toko.nama}`}
+                />
+              </div>
             </div>
-            <TombolBagikan
-              judul={`${produk.nama} — ${toko.nama}`}
-              teks={`Lihat ${produk.nama} seharga ${formatRupiah(produk.harga)} di ${toko.nama}`}
-            />
           </div>
+          {/* US-50: Asisten AI tanya jawab produk */}
+          <AsistenAI produk={produk} />
         </div>
       </article>
 

@@ -2,6 +2,55 @@
 
 import { redirect } from "next/navigation";
 import { buatKoneksiAdmin } from "@/lib/supabase/admin";
+import { buatKoneksiServer } from "@/lib/supabase/server";
+
+// Helper upload foto ke Supabase Storage (US-29)
+async function prosesUploadFoto(fotoFile, fotoUrlManual, errors) {
+  if (fotoFile && fotoFile instanceof File && fotoFile.size > 0) {
+    // Validasi tipe file gambar
+    if (!fotoFile.type.startsWith("image/")) {
+      errors.foto_file = "Format file tidak didukung. Unggah gambar (JPG, PNG, WEBP, atau SVG).";
+      return null;
+    }
+
+    // Validasi ukuran maksimal 5 MB
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (fotoFile.size > MAX_SIZE) {
+      errors.foto_file = "Ukuran gambar terlalu besar. Maksimal 5 MB.";
+      return null;
+    }
+
+    try {
+      const serverClient = buatKoneksiServer();
+      const ext = fotoFile.name.split(".").pop() || "jpg";
+      const namaBersih = fotoFile.name.replace(/[^a-zA-Z0-9]/g, "-").slice(0, 20);
+      const namaFile = `${Date.now()}-${namaBersih}.${ext}`;
+
+      const arrayBuffer = await fotoFile.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      const { error: uploadError } = await serverClient.storage
+        .from("produk")
+        .upload(namaFile, buffer, {
+          contentType: fotoFile.type,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        errors.foto_file = `Gagal mengunggah foto: ${uploadError.message}`;
+        return null;
+      }
+
+      const { data: { publicUrl } } = serverClient.storage.from("produk").getPublicUrl(namaFile);
+      return publicUrl;
+    } catch (err) {
+      errors.foto_file = `Terjadi kesalahan saat mengunggah foto: ${err.message}`;
+      return null;
+    }
+  }
+
+  return fotoUrlManual || "";
+}
 
 /**
  * Server Action untuk memproses login admin dengan email dan password.
@@ -63,12 +112,13 @@ export async function tambahProduk(arg1, arg2) {
   const rawKategori = formData?.get("kategori") ?? "";
   const rawFoto = formData?.get("foto_url") ?? "";
   const rawDeskripsi = formData?.get("deskripsi") ?? "";
+  const foto_file = formData?.get("foto_file");
 
   const nama = String(rawNama).trim();
   const rawHargaStr = String(rawHarga).trim();
   const harga = parseInt(rawHargaStr, 10);
   const kategori = String(rawKategori).trim();
-  const foto_url = String(rawFoto).trim();
+  let foto_url = String(rawFoto).trim();
   const deskripsi = String(rawDeskripsi).trim();
 
   const values = {
@@ -87,6 +137,15 @@ export async function tambahProduk(arg1, arg2) {
     errors.harga = "Harga produk wajib diisi.";
   } else if (isNaN(harga) || harga <= 0) {
     errors.harga = "Harga harus berupa angka lebih dari 0.";
+  }
+
+  // Upload ke Supabase Storage jika ada file foto (US-29)
+  if (foto_file && foto_file instanceof File && foto_file.size > 0) {
+    const uploadedUrl = await prosesUploadFoto(foto_file, foto_url, errors);
+    if (uploadedUrl) {
+      foto_url = uploadedUrl;
+      values.foto_url = uploadedUrl;
+    }
   }
 
   if (Object.keys(errors).length > 0) {
@@ -118,12 +177,13 @@ export async function ubahProduk(id, arg1, arg2) {
   const rawKategori = formData?.get("kategori") ?? "";
   const rawFoto = formData?.get("foto_url") ?? "";
   const rawDeskripsi = formData?.get("deskripsi") ?? "";
+  const foto_file = formData?.get("foto_file");
 
   const nama = String(rawNama).trim();
   const rawHargaStr = String(rawHarga).trim();
   const harga = parseInt(rawHargaStr, 10);
   const kategori = String(rawKategori).trim();
-  const foto_url = String(rawFoto).trim();
+  let foto_url = String(rawFoto).trim();
   const deskripsi = String(rawDeskripsi).trim();
 
   const values = {
@@ -142,6 +202,15 @@ export async function ubahProduk(id, arg1, arg2) {
     errors.harga = "Harga produk wajib diisi.";
   } else if (isNaN(harga) || harga <= 0) {
     errors.harga = "Harga harus berupa angka lebih dari 0.";
+  }
+
+  // Upload ke Supabase Storage jika ada file foto baru (US-29)
+  if (foto_file && foto_file instanceof File && foto_file.size > 0) {
+    const uploadedUrl = await prosesUploadFoto(foto_file, foto_url, errors);
+    if (uploadedUrl) {
+      foto_url = uploadedUrl;
+      values.foto_url = uploadedUrl;
+    }
   }
 
   if (Object.keys(errors).length > 0) {

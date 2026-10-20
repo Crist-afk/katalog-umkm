@@ -14,6 +14,12 @@ export default function Footer() {
           <Link href="/tentang" className="underline underline-offset-4 hover:text-utama">
             Tentang kami
           </Link>
+          <Link href="/favorit" className="underline underline-offset-4 hover:text-utama">
+            Produk favorit
+          </Link>
+          <Link href="/keranjang" className="underline underline-offset-4 hover:text-utama">
+            Keranjang belanja
+          </Link>
           <Link href="/admin" className="underline underline-offset-4 hover:text-utama">
             Masuk sebagai admin
           </Link>
